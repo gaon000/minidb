@@ -19,13 +19,23 @@ Node.js 기반 도구가 필요한 경우 Node.js 22 이상과 pnpm을 우선 �
 | 작업 | 실제 명령 |
 | --- | --- |
 | 의존성 설치 | 해당 없음 |
-| 로컬 실행 | 실행 진입점 미구성 |
+| 로컬 실행 | 아래 1강 예제 |
 | 정적 분석 | `go vet ./...` |
 | 포맷 검사 | `gofmt -l .` 출력이 비어 있어야 함 |
 | 타입 검사 | `go build ./...`에 포함 |
 | 기본 테스트 | `go test ./...` |
-| 통합·주요 흐름 테스트 | 미구성 |
+| 통합·주요 흐름 테스트 | `go test -run '^TestStoragePersistsRecordsAcrossReopen$' ./...` |
 | 빌드 | `go build ./...` |
+
+### 1강 예제
+
+새 임시 디렉터리에서 레코드 세 개를 저장하고, 별도 실행에서 RID `2`로 Charlie를 조회한다. `write`를 다시 실행하면 샘플 레코드가 파일 끝에 추가된다.
+
+```sh
+demo_dir=$(mktemp -d)
+go run ./cmd/lesson1 write "$demo_dir/users.db"
+go run ./cmd/lesson1 read "$demo_dir/users.db"
+```
 
 ## 코드 기준
 
@@ -42,7 +52,7 @@ JavaScript나 TypeScript를 사용할 경우 다음 기준을 적용한다.
 
 ## 테스트 환경
 
-Go의 표준 `testing` 패키지를 사용한다. 저장소 테스트에서 파일이 필요하면 `t.TempDir()`로 테스트별 경로를 만든다. 테스트 케이스는 첫 구현과 함께 추가한다.
+Go의 표준 `testing` 패키지를 사용한다. 저장소 테스트에서 파일이 필요하면 `t.TempDir()`로 테스트별 경로를 만든다.
 
 테스트 데이터와 외부 연동을 격리한다. 파괴적인 fixture나 migration 검증에는 폐기 가능한 전용 환경을 사용한다. 테스트 수집 실패, 전부 skip, 예상보다 줄어든 실행 범위를 통과로 해석하지 않는다.
 
